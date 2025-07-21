@@ -1,5 +1,10 @@
 package com.example.demo1.service;
 
+import com.alibaba.fastjson2.JSONB;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import okhttp3.*;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +26,15 @@ import java.io.IOException;
 public class QwenApiService implements IQwenApiService{
 
     private final OkHttpClient client = new OkHttpClient();
+    private final ObjectMapper mapper = new ObjectMapper();
 
-    private static final String API_KEY = "sk-da83f61f17e843249b3b887b27e90673"; // 替换成你自己的 token
+    private static final String MODEL = "qwen_turbo";
+//    private static final String API_KEY = "sk-da83f61f17e843249b3b887b27e90673";
+    private static final String API_KEY = "sk-95cf32d80cee44cdb0a498e7a60a641d";
+    private static final String API_URL = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions";
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
 
     @Override
     public GenerationResult callQwen(String prompt) throws ApiException, NoApiKeyException, InputRequiredException {
@@ -46,34 +58,103 @@ public class QwenApiService implements IQwenApiService{
                 .build();
 
         return gen.call(param);
+    }
 
+    @Override
+    public String callQwenByHttp(String prompt) throws IOException {
+        // 构造请求体
+        // 构造 JSON 请求体
+        ObjectNode root = mapper.createObjectNode();
+        root.put("model", MODEL);
 
-//        String jsonBody = "{\n" +
-//                "  \"model\": \"qwen-turbo\",\n" +
-//                "  \"input\": {\n" +
-//                "    \"prompt\": \"" + prompt + "\"\n" +
-//                "  },\n" +
-//                "  \"parameters\": {\n" +
-//                "    \"result_format\": \"text\"\n" +
-//                "  }\n" +
-//                "}";
+        // 构建 messages 数组
+        ArrayNode messages = mapper.createArrayNode();
+
+        // system message
+        ObjectNode systemMessage = mapper.createObjectNode();
+        systemMessage.put("role", "system");
+        systemMessage.put("content", "You are a helpful assistant.");
+        messages.add(systemMessage);
+
+        // user message
+        ObjectNode userMessage = mapper.createObjectNode();
+        userMessage.put("role", "user");
+        userMessage.put("content", prompt);
+        messages.add(userMessage);
+
+        root.set("messages", messages);
+        root.put("temperature", 0.7); // 可选参数
+
+        // 转成 JSON 字符串
+        String jsonBody = mapper.writeValueAsString(root);
+        System.out.println("请求 JSON：\n" + jsonBody);
+
+        RequestBody body = RequestBody.create(
+                jsonBody,
+                MediaType.parse("application/json")
+        );
+
+        Request request = new Request.Builder()
+                .url(API_URL)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .addHeader("Content-Type", "application/json")
+                .post(body)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                String err = response.body() != null ? response.body().string() : "";
+                throw new IOException("请求失败: " + response.code() + " - " + response.message() + "\n" + err);
+            }
+
+            return response.body().string(); // 正确返回 JSON
+        }
+
+//        // system message
+//        ObjectNode systemMessage = mapper.createObjectNode();
+//        systemMessage.put("role", "system");
+//        systemMessage.put("content", "You are a helpful assistant.");
+//        messages.add(systemMessage);
 //
-//        RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
+//        // user message
+//        ObjectNode userMessage = mapper.createObjectNode();
+//        userMessage.put("role", "user");
+//        userMessage.put("content", prompt);
+//        messages.add(userMessage);
+//
+//        root.set("messages", messages);
+//        root.put("temperature", 0.7); // 可选参数
+//        String requestBodyJson = """
+//        {
+//          "model": "qwen-turbo",
+//          "messages": [
+//            {"role": "system", "content": "You are a helpful assistant."},
+//            {"role": "user", "content": "%s"}
+//          ],
+//          "temperature": 0.7
+//        }
+//        """.formatted(prompt);
+//
+//        RequestBody body = RequestBody.create(
+//                requestBodyJson,
+//                MediaType.parse("application/json")
+//        );
 //
 //        Request request = new Request.Builder()
 //                .url(API_URL)
-//                .header("Authorization", "Bearer " + API_KEY)
+//                .addHeader("Content-Type", "application/json")
+//                .addHeader("Authorization", "Bearer " + API_KEY)
 //                .post(body)
 //                .build();
 //
+//        // 发送请求
 //        try (Response response = client.newCall(request).execute()) {
 //            if (!response.isSuccessful()) {
-//                return "模型接口调用失败: " + response.code();
+//                throw new IOException("调用失败: " + response.code() + " - " + response.message());
 //            }
-//            return response.body().string();  // 返回原始字符串（下一步我们格式化）
+//
+//            return response.body().string();  // 你自己定义的结果类
 //        }
-
-
     }
 
 

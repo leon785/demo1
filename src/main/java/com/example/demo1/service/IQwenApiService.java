@@ -9,5 +9,6 @@ import java.io.IOException;
 
 
 public interface IQwenApiService {
-    public GenerationResult callQwen(String prompt) throws ApiException, NoApiKeyException, InputRequiredException ;
+    public GenerationResult callQwen(String prompt) throws ApiException, NoApiKeyException, InputRequiredException;
+    public String callQwenByHttp(String prompt) throws IOException;
 }

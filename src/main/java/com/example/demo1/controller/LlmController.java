@@ -40,4 +40,19 @@ public class LlmController {
             return new ResponseMessage<>(500, e.getMessage(), null);
         }
     }
+
+    @PostMapping("/askByHttp")
+    public ResponseMessage<String> askByHttp(@RequestBody PromptDto prompt) throws ApiException, IOException, NoApiKeyException, InputRequiredException {
+        String p = prompt.getPrompt();
+        String filteredP = promptFilter.filter(p);
+
+        try {
+            String modelResponseJson = qwenApiService.callQwenByHttp(filteredP);  // 直接拿到 JSON 字符串
+            return ResponseMessage.success(modelResponseJson);
+
+        } catch (ApiException | IOException e ) {
+            return new ResponseMessage<>(500, "调用模型失败: " + e.getMessage(), null);
+        }
+    }
+
 }
