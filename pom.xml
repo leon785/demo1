@@ -14,6 +14,8 @@
 	<name>demo1</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
+
+
 	<licenses>
 		<license/>
 	</licenses>
@@ -26,6 +28,8 @@
 		<tag/>
 		<url/>
 	</scm>
+
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -36,13 +40,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>
-
-		<!-- MySQL 驱动 -->
-		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
-			<version>8.0.33</version> <!-- 请根据需要调整版本 -->
 		</dependency>
 
 		<!-- Spring Web：支持构建 RESTful 服务 -->
@@ -56,6 +53,41 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+
+		<!-- Spring Web - MediaType等HTTP相关类 -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+
+		<!-- Spring Context - 支持@Bean注解和依赖注入 -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+
+		<!-- Spring Boot WebFlux Starter - 包含WebClient和响应式编程支持 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
+		<!-- Spring Boot Configuration Processor - 支持@Configuration注解 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+
+		<!-- MySQL 驱动 -->
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<version>8.0.33</version> <!-- 请根据需要调整版本 -->
+		</dependency>
+
+
 
 		<dependency>
 			<groupId>jakarta.validation</groupId>
@@ -94,6 +126,40 @@
 			<artifactId>dashscope-sdk-java</artifactId>
 			<version>2.20.9</version>
 		</dependency>
+
+		<!-- ===================================================================================  -->
+
+
+
+
+
+		<!-- Reactor Netty HTTP - WebClient的底层HTTP客户端实现 -->
+		<dependency>
+			<groupId>io.projectreactor.netty</groupId>
+			<artifactId>reactor-netty-http</artifactId>
+		</dependency>
+
+		<!-- Reactor Core - 响应式编程核心库 (Mono, Flux) -->
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-core</artifactId>
+		</dependency>
+
+
+
+		<!-- Jackson Core - JSON序列化/反序列化支持 -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+
+		<!-- Netty Transport - 底层网络传输层 -->
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-transport</artifactId>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
